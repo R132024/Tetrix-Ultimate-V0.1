@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cubix_blast/casino/logic/charms.dart';
 import 'package:cubix_blast/casino/logic/casino_engine.dart';
+import 'package:cubix_blast/core/audio_service.dart';
 
 class CasinoShopModal extends StatefulWidget {
   final CasinoEngine engine;
@@ -83,7 +84,7 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.95,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: crtDark,
             border: Border.all(color: crtGreen, width: 4), // Blocky 8-bit border
@@ -97,42 +98,41 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
           ),
           child: Material(
             type: MaterialType.transparency,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 Text(
                   'TIENDA DE AMULETOS',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.pressStart2p(fontSize: 16, color: crtGreen, shadows: [
+                  style: GoogleFonts.pressStart2p(fontSize: 14, color: crtGreen, shadows: [
                     const Shadow(color: crtGreen, blurRadius: 10)
                   ]),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 
                 // PANEL DE DEUDA
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   decoration: BoxDecoration(
                     color: crtRed.withValues(alpha: 0.2),
                     border: Border.all(color: crtRed, width: 2),
                   ),
                   child: Text(
-                    widget.engine.isCycleDebtPaid 
-                        ? 'DEUDA DE CICLO: PAGADA' 
-                        : 'DEUDA DE CICLO: \$${widget.engine.targetDebt}',
+                    'DEUDA: \$${widget.engine.targetDebt} -> \$${widget.engine.nextTargetDebt}',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.vt323(
-                      color: widget.engine.isCycleDebtPaid ? const Color(0xFF00E676) : crtRed, 
-                      fontSize: 24, 
+                      color: crtRed, 
+                      fontSize: 18, 
                       fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     border: Border.all(color: crtAmber, width: 2),
                     color: Colors.black,
@@ -144,23 +144,23 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                     builder: (context, val, child) {
                       return Text(
                         'FICHAS: \$${val.toInt()}',
-                        style: GoogleFonts.vt323(color: crtAmber, fontSize: 28, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.vt323(color: crtAmber, fontSize: 24, fontWeight: FontWeight.bold),
                       );
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 ..._shopItems.map((charm) => _buildCharmCard(charm)),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 _buildRetroButton(
                   text: 'GIRAR TIENDA (-\$50)',
                   color: Colors.blueAccent,
                   onPressed: _reroll,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 if (!widget.engine.isCycleDebtPaid && !widget.engine.isDebtRound) ...[
                   _buildRetroButton(
-                    text: canPayDebt ? 'PAGAR DEUDA ADELANTADA' : 'DEUDA NO PAGABLE AÚN',
+                    text: canPayDebt ? 'PAGAR DEUDA' : 'DEUDA NO PAGABLE',
                     color: canPayDebt ? const Color(0xFF00E676) : Colors.grey,
                     textColor: Colors.black,
                     onPressed: () {
@@ -169,16 +169,16 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                           widget.engine.runMoney -= widget.engine.targetDebt;
                           widget.engine.isCycleDebtPaid = true;
                         });
-                        AudioService.instance.playComprar();
+                        AudioService.instance.playBoton();
                       }
                     },
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                 ],
                 _buildRetroButton(
                   text: widget.engine.isCycleDebtPaid || !widget.engine.isDebtRound
                       ? 'SIGUIENTE RONDA >>'
-                      : (canPayDebt ? 'PAGAR DEUDA Y AVANZAR >>' : 'BANCARROTA (MORIR)'),
+                      : (canPayDebt ? 'PAGAR Y AVANZAR >>' : 'BANCARROTA (MORIR)'),
                   color: (widget.engine.isCycleDebtPaid || !widget.engine.isDebtRound || canPayDebt) ? crtGreen : crtRed,
                   textColor: Colors.black,
                   onPressed: () {
@@ -206,7 +206,7 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
   Widget _buildCharmCard(Charm charm) {
     final rarityColor = _getRarityColor(charm.rarity);
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.black,
@@ -215,7 +215,6 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 8-Bit Emoji Icon
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -224,7 +223,7 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
             ),
             child: Text(
               charm.icon,
-              style: const TextStyle(fontSize: 28), // Emojis size
+              style: const TextStyle(fontSize: 24),
             ),
           ),
           const SizedBox(width: 12),
@@ -234,12 +233,14 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
               children: [
                 Text(
                   charm.name.toUpperCase(), 
-                  style: GoogleFonts.vt323(color: rarityColor, fontSize: 22, fontWeight: FontWeight.bold)
+                  style: GoogleFonts.pressStart2p(color: rarityColor, fontSize: 10)
                 ),
                 const SizedBox(height: 4),
                 Text(
                   charm.description, 
-                  style: GoogleFonts.vt323(color: Colors.white70, fontSize: 18, height: 1.1)
+                  style: GoogleFonts.vt323(color: Colors.white70, fontSize: 14),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

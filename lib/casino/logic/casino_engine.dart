@@ -39,6 +39,10 @@ class CasinoEngine implements GameEngine {
   bool isCycleDebtPaid = false;
   int get targetScore => (1000 * pow(1.8, currentRound - 1)).floor();
   int get targetDebt => isCycleDebtPaid ? 0 : (currentCycle * 600) + ((currentCycle - 1) * 300);
+  int get nextTargetDebt {
+    int nextCycle = currentCycle + 1;
+    return (nextCycle * 600) + ((nextCycle - 1) * 300);
+  }
   List<Charm> activeCharms = [];
   int roundScore = 0;
   int runMoney = 0; // Fichas de la partida (Run Money)

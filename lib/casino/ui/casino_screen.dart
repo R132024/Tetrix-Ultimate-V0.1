@@ -267,9 +267,9 @@ class _CasinoScreenState extends State<CasinoScreen>
                                       style: GoogleFonts.vt323(color: const Color(0xFFFFB000), fontSize: 20, fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      _engine.isCycleDebtPaid ? 'DEUDA: PAGADA' : 'DEUDA: \$${_engine.targetDebt}',
+                                      _engine.isCycleDebtPaid ? 'PRÓX. DEUDA: \$${_engine.nextTargetDebt}' : 'DEUDA: \$${_engine.targetDebt}',
                                       style: GoogleFonts.vt323(
-                                        color: _engine.isCycleDebtPaid ? const Color(0xFF00E676) : const Color(0xFFFF1744), 
+                                        color: _engine.isCycleDebtPaid ? Colors.grey : const Color(0xFFFF1744), 
                                         fontSize: 20, 
                                         fontWeight: FontWeight.bold
                                       ),
