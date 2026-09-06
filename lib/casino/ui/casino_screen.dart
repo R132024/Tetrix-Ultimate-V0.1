@@ -267,7 +267,7 @@ class _CasinoScreenState extends State<CasinoScreen>
                                       style: GoogleFonts.vt323(color: const Color(0xFFFFB000), fontSize: 20, fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      'DEUDA: \$${_engine.targetDebt}',
+                                      'DEUDA (${_engine.roundInCycle}/3): \$${_engine.targetDebt}',
                                       style: GoogleFonts.vt323(color: const Color(0xFFFF1744), fontSize: 20, fontWeight: FontWeight.bold),
                                     ),
                                   ],

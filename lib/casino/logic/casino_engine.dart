@@ -33,8 +33,11 @@ class CasinoEngine implements GameEngine {
 
   // Casino specifics
   int currentRound = 1;
+  int get currentCycle => ((currentRound - 1) ~/ 3) + 1;
+  int get roundInCycle => ((currentRound - 1) % 3) + 1;
+  bool get isDebtRound => roundInCycle == 3;
   int get targetScore => (1000 * pow(1.8, currentRound - 1)).floor();
-  int get targetDebt => currentRound * 150;
+  int get targetDebt => (currentCycle * 600) + ((currentCycle - 1) * 300);
   List<Charm> activeCharms = [];
   int roundScore = 0;
   int runMoney = 0; // Fichas de la partida (Run Money)
@@ -592,6 +595,9 @@ class CasinoEngine implements GameEngine {
 
       int moneyGained = result.count * (15 + bonusCoinsPerLine);
       runMoney += moneyGained;
+      if (moneyGained > 0) {
+        floatingTexts.add(FloatingText('+\$$moneyGained Fichas', 2.0, 0xFFFFB000));
+      }
 
       if (newLevel > state.level) {
         floatingTexts.add(FloatingText('LEVEL UP!', 3.0, 0xFFFF1744));
