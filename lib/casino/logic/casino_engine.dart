@@ -36,8 +36,9 @@ class CasinoEngine implements GameEngine {
   int get currentCycle => ((currentRound - 1) ~/ 3) + 1;
   int get roundInCycle => ((currentRound - 1) % 3) + 1;
   bool get isDebtRound => roundInCycle == 3;
+  bool isCycleDebtPaid = false;
   int get targetScore => (1000 * pow(1.8, currentRound - 1)).floor();
-  int get targetDebt => (currentCycle * 600) + ((currentCycle - 1) * 300);
+  int get targetDebt => isCycleDebtPaid ? 0 : (currentCycle * 600) + ((currentCycle - 1) * 300);
   List<Charm> activeCharms = [];
   int roundScore = 0;
   int runMoney = 0; // Fichas de la partida (Run Money)
@@ -177,6 +178,9 @@ class CasinoEngine implements GameEngine {
     activeCharms.clear();
     roundScore = 0;
     runMoney = 0;
+    isCycleDebtPaid = false;
+
+    // Reset combat/modifiers
     dropSpeedMultiplier = 1.0;
     hideNextPiece = false;
     invertedControls = false;
@@ -191,6 +195,9 @@ class CasinoEngine implements GameEngine {
 
   void nextRound() {
     currentRound++;
+    if (roundInCycle == 1) {
+      isCycleDebtPaid = false;
+    }
     roundScore = 0;
     baseRoundSpeedMultiplier *= 1.15; // +15% drop speed per round
     pendingGarbage += 1; // 1 line of tax garbage

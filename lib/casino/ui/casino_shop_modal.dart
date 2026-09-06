@@ -76,7 +76,7 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
 
   @override
   Widget build(BuildContext context) {
-    final bool canPayDebt = !widget.engine.isDebtRound || widget.engine.runMoney >= widget.engine.targetDebt;
+    final bool canPayDebt = widget.engine.runMoney >= widget.engine.targetDebt;
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -118,9 +118,15 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                     border: Border.all(color: crtRed, width: 2),
                   ),
                   child: Text(
-                    'DEUDA DE CICLO (${widget.engine.roundInCycle}/3): \$${widget.engine.targetDebt}',
+                    widget.engine.isCycleDebtPaid 
+                        ? 'DEUDA DE CICLO: PAGADA' 
+                        : 'DEUDA DE CICLO: \$${widget.engine.targetDebt}',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.vt323(color: crtRed, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.vt323(
+                      color: widget.engine.isCycleDebtPaid ? const Color(0xFF00E676) : crtRed, 
+                      fontSize: 24, 
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
                 
@@ -152,19 +158,37 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                   onPressed: _reroll,
                 ),
                 const SizedBox(height: 12),
-                _buildRetroButton(
-                  text: widget.engine.isDebtRound 
-                      ? (canPayDebt ? 'PAGAR DEUDA Y AVANZAR >>' : 'BANCARROTA (MORIR)')
-                      : 'SIGUIENTE RONDA >>',
-                  color: canPayDebt ? crtGreen : crtRed,
-                  textColor: Colors.black,
-                  onPressed: () {
-                    if (canPayDebt) {
-                      if (widget.engine.isDebtRound) {
+                if (!widget.engine.isCycleDebtPaid && !widget.engine.isDebtRound) ...[
+                  _buildRetroButton(
+                    text: canPayDebt ? 'PAGAR DEUDA ADELANTADA' : 'DEUDA NO PAGABLE AÚN',
+                    color: canPayDebt ? const Color(0xFF00E676) : Colors.grey,
+                    textColor: Colors.black,
+                    onPressed: () {
+                      if (canPayDebt) {
                         setState(() {
                           widget.engine.runMoney -= widget.engine.targetDebt;
+                          widget.engine.isCycleDebtPaid = true;
                         });
+                        AudioService.instance.playComprar();
                       }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                _buildRetroButton(
+                  text: widget.engine.isCycleDebtPaid || !widget.engine.isDebtRound
+                      ? 'SIGUIENTE RONDA >>'
+                      : (canPayDebt ? 'PAGAR DEUDA Y AVANZAR >>' : 'BANCARROTA (MORIR)'),
+                  color: (widget.engine.isCycleDebtPaid || !widget.engine.isDebtRound || canPayDebt) ? crtGreen : crtRed,
+                  textColor: Colors.black,
+                  onPressed: () {
+                    if (widget.engine.isCycleDebtPaid || !widget.engine.isDebtRound) {
+                      widget.onNextRound();
+                    } else if (canPayDebt) {
+                      setState(() {
+                        widget.engine.runMoney -= widget.engine.targetDebt;
+                        widget.engine.isCycleDebtPaid = true;
+                      });
                       widget.onNextRound();
                     } else {
                       widget.onGameOver();
