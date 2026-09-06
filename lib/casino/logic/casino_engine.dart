@@ -34,6 +34,7 @@ class CasinoEngine implements GameEngine {
   // Casino specifics
   int currentRound = 1;
   int get targetScore => (1000 * pow(1.8, currentRound - 1)).floor();
+  int get targetDebt => currentRound * 150;
   List<Charm> activeCharms = [];
   int roundScore = 0;
   int runMoney = 0; // Fichas de la partida (Run Money)

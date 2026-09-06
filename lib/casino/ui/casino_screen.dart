@@ -387,6 +387,9 @@ class _CasinoScreenState extends State<CasinoScreen>
                       onNextRound: () {
                         _engine.nextRound();
                       },
+                      onGameOver: () {
+                        _engine.forceGameOver();
+                      },
                     ),
                   );
                 } else if (_engine.state.status == GameStatus.paused) {

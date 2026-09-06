@@ -7,11 +7,13 @@ import 'package:cubix_blast/casino/logic/casino_engine.dart';
 class CasinoShopModal extends StatefulWidget {
   final CasinoEngine engine;
   final VoidCallback onNextRound;
+  final VoidCallback onGameOver;
 
   const CasinoShopModal({
     super.key,
     required this.engine,
     required this.onNextRound,
+    required this.onGameOver,
   });
 
   @override
@@ -74,6 +76,8 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
 
   @override
   Widget build(BuildContext context) {
+    final bool canPayDebt = widget.engine.runMoney >= widget.engine.targetDebt;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Center(
@@ -103,6 +107,23 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                     const Shadow(color: crtGreen, blurRadius: 10)
                   ]),
                 ),
+                const SizedBox(height: 12),
+                
+                // PANEL DE DEUDA
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: crtRed.withValues(alpha: 0.2),
+                    border: Border.all(color: crtRed, width: 2),
+                  ),
+                  child: Text(
+                    'DEUDA DE RONDA: \$${widget.engine.targetDebt}',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.vt323(color: crtRed, fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(8),
@@ -132,10 +153,19 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                 ),
                 const SizedBox(height: 12),
                 _buildRetroButton(
-                  text: 'SIGUIENTE RONDA >>',
-                  color: crtGreen,
+                  text: canPayDebt ? 'PAGAR DEUDA Y AVANZAR >>' : 'BANCARROTA (MORIR)',
+                  color: canPayDebt ? crtGreen : crtRed,
                   textColor: Colors.black,
-                  onPressed: widget.onNextRound,
+                  onPressed: () {
+                    if (canPayDebt) {
+                      setState(() {
+                        widget.engine.runMoney -= widget.engine.targetDebt;
+                      });
+                      widget.onNextRound();
+                    } else {
+                      widget.onGameOver();
+                    }
+                  },
                 ),
               ],
             ),
