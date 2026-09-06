@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBZJvPd5Uv583SpPRvtjLLKN3-mSl4q4AY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>58339174661</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.cubixblast.cubixBlast</string>
+	<key>PROJECT_ID</key>
+	<string>beattris</string>
+	<key>STORAGE_BUCKET</key>
+	<string>beattris.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:58339174661:ios:a83d7aef5341994be8ef6c</string>
+	<key>DATABASE_URL</key>
+	<string>https://beattris-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

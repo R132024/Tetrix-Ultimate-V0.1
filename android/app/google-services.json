@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "58339174661",
+    "firebase_url": "https://beattris-default-rtdb.firebaseio.com",
+    "project_id": "beattris",
+    "storage_bucket": "beattris.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58339174661:android:3ef75f2ec2f655dee8ef6c",
+        "android_client_info": {
+          "package_name": "com.whitestickerstudio.tetrixultimate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgeVb1g9St6GBa_vEQ67wMTIHjlr0ehOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
