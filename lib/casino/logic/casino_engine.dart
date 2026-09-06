@@ -41,6 +41,10 @@ class CasinoEngine implements GameEngine {
   // Modifiers applied by charms
   double dropSpeedMultiplier = 1.0;
   bool hideNextPiece = false;
+  bool invertedControls = false;
+  bool disableHold = false;
+  double garbageMultiplier = 1.0;
+  int bonusCoinsPerLine = 0;
   
   // Dificultad automática
   double baseRoundSpeedMultiplier = 1.0;
@@ -53,7 +57,7 @@ class CasinoEngine implements GameEngine {
 
   @override
   void receiveGarbage(int lines) {
-    pendingGarbage += lines;
+    pendingGarbage += (lines * garbageMultiplier).round();
   }
 
   DateTime? _reviveStartTime;
@@ -171,6 +175,10 @@ class CasinoEngine implements GameEngine {
     runMoney = 0;
     dropSpeedMultiplier = 1.0;
     hideNextPiece = false;
+    invertedControls = false;
+    disableHold = false;
+    garbageMultiplier = 1.0;
+    bonusCoinsPerLine = 0;
     baseRoundSpeedMultiplier = 1.0;
     
     _grid.clear();
@@ -352,7 +360,7 @@ class CasinoEngine implements GameEngine {
   @override
   void moveLeft() {
     if (state.status != GameStatus.playing || activePiece == null) return;
-    final moved = activePiece!.moved(0, -1);
+    final moved = activePiece!.moved(0, invertedControls ? 1 : -1);
     if (!_grid.collides(moved)) {
       activePiece = moved;
       _lastMoveType = LastMoveType.move;
@@ -363,7 +371,7 @@ class CasinoEngine implements GameEngine {
   @override
   void moveRight() {
     if (state.status != GameStatus.playing || activePiece == null) return;
-    final moved = activePiece!.moved(0, 1);
+    final moved = activePiece!.moved(0, invertedControls ? -1 : 1);
     if (!_grid.collides(moved)) {
       activePiece = moved;
       _lastMoveType = LastMoveType.move;
@@ -451,7 +459,7 @@ class CasinoEngine implements GameEngine {
 
   @override
   void holdPiece() {
-    if (state.status != GameStatus.playing || activePiece == null || !canHold) {
+    if (state.status != GameStatus.playing || activePiece == null || !canHold || disableHold) {
       return;
     }
 
@@ -581,7 +589,7 @@ class CasinoEngine implements GameEngine {
       roundScore += scoreAdd;
       final newScore = state.score + scoreAdd;
 
-      int moneyGained = result.count * 15;
+      int moneyGained = result.count * (15 + bonusCoinsPerLine);
       runMoney += moneyGained;
 
       if (newLevel > state.level) {

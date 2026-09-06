@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:cubix_blast/casino/logic/charms.dart';
 import 'package:cubix_blast/casino/logic/casino_engine.dart';
 
@@ -54,22 +55,39 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
     }
   }
 
+  // --- RETRO COLORS ---
+  static const Color crtGreen = Color(0xFF4AF626);
+  static const Color crtDark = Color(0xFF051005);
+  static const Color crtAmber = Color(0xFFFFB000);
+  static const Color crtRed = Color(0xFFFF1744);
+
+  Color _getRarityColor(CharmRarity rarity) {
+    switch (rarity) {
+      case CharmRarity.common: return Colors.white;
+      case CharmRarity.rare: return Colors.blueAccent;
+      case CharmRarity.epic: return Colors.purpleAccent;
+      case CharmRarity.legendary: return crtAmber;
+      case CharmRarity.cursed: return crtRed;
+      case CharmRarity.punishment: return Colors.deepOrange;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          padding: const EdgeInsets.all(24),
+          width: MediaQuery.of(context).size.width * 0.95,
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFFFD600), width: 2),
+            color: crtDark,
+            border: Border.all(color: crtGreen, width: 4), // Blocky 8-bit border
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFFD600).withValues(alpha: 0.3),
-                blurRadius: 30,
+                color: crtGreen.withValues(alpha: 0.2),
+                blurRadius: 20,
+                spreadRadius: 5,
               ),
             ],
           ),
@@ -78,38 +96,46 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'TIENDA DE AMULETOS',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.pressStart2p(fontSize: 16, color: crtGreen, shadows: [
+                    const Shadow(color: crtGreen, blurRadius: 10)
+                  ]),
                 ),
                 const SizedBox(height: 16),
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(begin: 0, end: widget.engine.runMoney.toDouble()),
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOutQuint,
-                  builder: (context, val, child) {
-                    return Text(
-                      'Fichas de Partida: \$${val.toInt()}',
-                      style: const TextStyle(color: Color(0xFFFFD600), fontSize: 18, fontWeight: FontWeight.bold),
-                    );
-                  },
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: crtAmber, width: 2),
+                    color: Colors.black,
+                  ),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0, end: widget.engine.runMoney.toDouble()),
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOutQuint,
+                    builder: (context, val, child) {
+                      return Text(
+                        'FICHAS: \$${val.toInt()}',
+                        style: GoogleFonts.vt323(color: crtAmber, fontSize: 28, fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 ..._shopItems.map((charm) => _buildCharmCard(charm)),
                 const SizedBox(height: 16),
-                ElevatedButton(
+                _buildRetroButton(
+                  text: 'GIRAR TIENDA (-\$50)',
+                  color: Colors.blueAccent,
                   onPressed: _reroll,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-                  child: const Text('GIRAR TIENDA (-50 Monedas)'),
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
+                const SizedBox(height: 12),
+                _buildRetroButton(
+                  text: 'SIGUIENTE RONDA >>',
+                  color: crtGreen,
+                  textColor: Colors.black,
                   onPressed: widget.onNextRound,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFD600),
-                    foregroundColor: Colors.black,
-                  ),
-                  child: const Text('SIGUIENTE RONDA', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -120,31 +146,91 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
   }
 
   Widget _buildCharmCard(Charm charm) {
+    final rarityColor = _getRarityColor(charm.rarity);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.black45,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24),
+        color: Colors.black,
+        border: Border.all(color: rarityColor, width: 2),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 8-Bit Emoji Icon
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white24),
+              color: const Color(0xFF111111),
+            ),
+            child: Text(
+              charm.icon,
+              style: const TextStyle(fontSize: 28), // Emojis size
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(charm.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                Text(charm.description, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                Text(
+                  charm.name.toUpperCase(), 
+                  style: GoogleFonts.vt323(color: rarityColor, fontSize: 22, fontWeight: FontWeight.bold)
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  charm.description, 
+                  style: GoogleFonts.vt323(color: Colors.white70, fontSize: 18, height: 1.1)
+                ),
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () => _buyCharm(charm),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: Text('${charm.cost} M', style: const TextStyle(color: Colors.white)),
+          const SizedBox(width: 8),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('\$${charm.cost}', style: GoogleFonts.vt323(color: crtAmber, fontSize: 20)),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => _buyCharm(charm),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: rarityColor.withValues(alpha: 0.2),
+                    border: Border.all(color: rarityColor, width: 2),
+                  ),
+                  child: Text('COMPRAR', style: GoogleFonts.vt323(color: rarityColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildRetroButton({required String text, required Color color, Color? textColor, required VoidCallback onPressed}) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: color,
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(4, 4), // 8-bit drop shadow
+            )
+          ]
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.pressStart2p(color: textColor ?? Colors.white, fontSize: 12),
+        ),
       ),
     );
   }
