@@ -15,6 +15,8 @@ import 'package:cubix_blast/ui/widgets/overlay_menu.dart';
 import 'package:cubix_blast/ui/widgets/game_over_modal.dart';
 import 'package:cubix_blast/ui/widgets/next_piece_preview.dart';
 import 'package:cubix_blast/casino/ui/casino_shop_modal.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cubix_blast/casino/logic/charms.dart';
 
 import 'package:cubix_blast/ui/widgets/game_gesture_detector.dart';
 import 'package:cubix_blast/ui/widgets/audio_visualizer_bg.dart';
@@ -256,6 +258,20 @@ class _CasinoScreenState extends State<CasinoScreen>
                                     );
                                   },
                                 ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      'FICHAS: \$${_engine.runMoney}',
+                                      style: GoogleFonts.vt323(color: const Color(0xFFFFB000), fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      'DEUDA: \$${_engine.targetDebt}',
+                                      style: GoogleFonts.vt323(color: const Color(0xFFFF1744), fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -323,6 +339,31 @@ class _CasinoScreenState extends State<CasinoScreen>
                     ),
                   ),
                 ),
+                if (_engine.activeCharms.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _engine.activeCharms.length,
+                      itemBuilder: (context, index) {
+                        final charm = _engine.activeCharms[index];
+                        return GestureDetector(
+                          onTap: () => _showCharmModal(context, charm),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(color: Colors.white54, width: 2),
+                            ),
+                            child: Text(charm.icon, style: const TextStyle(fontSize: 24)),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                ],
                 const SizedBox(height: 16),
               ],
             ),
@@ -406,6 +447,73 @@ class _CasinoScreenState extends State<CasinoScreen>
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showCharmModal(BuildContext context, Charm charm) {
+    if (_engine.state.status == GameStatus.playing) {
+      _engine.togglePause();
+    }
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF051005),
+              border: Border.all(color: const Color(0xFF4AF626), width: 4),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4AF626).withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  charm.icon,
+                  style: const TextStyle(fontSize: 48),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  charm.name.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.vt323(color: const Color(0xFFFFB000), fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  charm.description,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.vt323(color: Colors.white, fontSize: 20),
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4AF626),
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Text(
+                      'CERRAR',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.pressStart2p(color: Colors.black, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
