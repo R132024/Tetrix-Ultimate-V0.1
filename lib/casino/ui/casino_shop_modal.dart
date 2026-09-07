@@ -197,6 +197,7 @@ class _CasinoShopModalState extends State<CasinoShopModal> {
                 ),
               ],
             ),
+            ),
           ),
         ),
       ),
